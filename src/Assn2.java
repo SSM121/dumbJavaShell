@@ -4,16 +4,31 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+//import Builtins;
+
 public class Assn2{
 	public static void main(String[] args) throws IOException{
 		String Directory = System.getProperty("user.dir"); //get the starting user directory. all directory changes will be here
-		boolean flag = true;
 		Scanner inputStream = new Scanner(System.in);
-		while(flag){ //the main shell loop
+		String inputString = "";
+		while(true){ //the main shell loop
 			System.out.format("[%s]: ", Directory); //display the current dir
-			String inputString = inputStream.nextLine(); //read a line of input
+			try{
+				inputString = inputStream.nextLine(); //read a line of input
+			} catch (Exception e){
+				System.exit(0);
+			}
 			String[] parsed = parse(inputString);
-			System.out.println("\n" + parsed[0]);
+			if(parsed.length > 0){ //used to make sure the user did not input an empty command. without this an empty command throws exception
+				switch(parsed[0]){
+					case "here":
+						Builtins.here(Directory);
+						break;
+					case "exit":
+						System.exit(0);
+						break;
+				}
+			}
 		}
 	}
 	public static String[] parse(String command){
