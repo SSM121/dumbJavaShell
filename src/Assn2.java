@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-//import Builtins;
+import java.nio.file.Files;
 
 public class Assn2{
 	public static void main(String[] args) throws IOException{
@@ -27,10 +27,15 @@ public class Assn2{
 					case "exit":
 						System.exit(0);
 						break;
+					case "list":
+						Builtins.list(Directory);
+						break;
 				}
 			}
 		}
 	}
+
+	
 	public static String[] parse(String command){
 		java.util.List<String> matchList = new java.util.ArrayList<>();
 		Pattern regex = Pattern.compile("[^\\s\"']+|\"([^\"]*)\"|'([^']*)'");
