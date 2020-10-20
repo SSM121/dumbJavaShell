@@ -7,8 +7,9 @@ import java.util.regex.Matcher;
 import java.nio.file.Files;
 
 public class Assn2{
+	static String Directory = "";
 	public static void main(String[] args) throws IOException{
-		String Directory = System.getProperty("user.dir"); //get the starting user directory. all directory changes will be here
+		Directory = System.getProperty("user.dir"); //get the starting user directory. all directory changes will be here
 		Scanner inputStream = new Scanner(System.in);
 		String inputString = "";
 		while(true){ //the main shell loop
@@ -19,26 +20,29 @@ public class Assn2{
 				System.exit(0);
 			}
 			String[] parsed = parse(inputString);
-			if(parsed.length > 0){ //used to make sure the user did not input an empty command. without this an empty command throws exception
-				switch(parsed[0]){
-					case "here":
-						Builtins.here(Directory);
-						break;
-					case "exit":
-						System.exit(0);
-						break;
-					case "list":
-						Builtins.list(Directory);
-						break;
-					case "cd":
-						Directory = Builtins.cd(Directory, parsed[1]);
-						break;
-				}
-			}
+			execute(parsed);
 		}
 	}
 
-	
+	public static void execute(String[] parsed){
+		if(parsed.length > 0){ //used to make sure the user did not input an empty command. without this an empty command throws exception
+			switch(parsed[0]){
+				case "here":
+					Builtins.here(Directory);
+					break;
+				case "exit":
+					System.exit(0);
+					break;
+				case "list":
+					Builtins.list(Directory);
+					break;
+				case "cd":
+					Directory = Builtins.cd(Directory, parsed[1]);
+					break;
+			}
+		}
+
+	}
 	public static String[] parse(String command){
 		java.util.List<String> matchList = new java.util.ArrayList<>();
 		Pattern regex = Pattern.compile("[^\\s\"']+|\"([^\"]*)\"|'([^']*)'");
