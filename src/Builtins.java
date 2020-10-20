@@ -47,5 +47,27 @@ public class Builtins{
 			System.out.println("test2");
 		}
 	}
+	public static String cd(String Directory, String goal){
+		if(goal.compareTo("..") == 0){
+			Path p = (new File(Directory)).toPath();
+			Path z = p.getParent();
+			return z.toString();
+		}
+		else if(goal.compareTo(".") == 0){
+			return Directory;
+		}
+		else{
+			Path p = (new File(Directory + "/" + goal)).toPath();
+			if(Files.exists(p) && Files.isDirectory(p)){
+				return p.toString();
+			}
+			else{
+				System.out.format("Error: %s is not a valid directory in %s\n", goal, Directory);
+			}
+
+
+		}
+		return Directory;
+	}
 
 }

@@ -30,6 +30,9 @@ public class Assn2{
 					case "list":
 						Builtins.list(Directory);
 						break;
+					case "cd":
+						Directory = Builtins.cd(Directory, parsed[1]);
+						break;
 				}
 			}
 		}
