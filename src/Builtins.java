@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.lang.StringBuffer;
 import java.text.FieldPosition;
+import java.util.ArrayList;
+
 public class Builtins{
 	public static void here(String Directory){
 		System.out.format("%s\n", Directory);
@@ -110,6 +112,12 @@ public class Builtins{
 			}catch (Exception e){}
 		}
 		
+	}
+
+	public static void history(ArrayList<String> History){
+		for(int i = 0; i < History.size(); i++){
+			System.out.format("%d : %s\n", i + 1, History.get(i));
+		}
 	}
 
 

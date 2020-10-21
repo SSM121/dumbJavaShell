@@ -5,9 +5,11 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.nio.file.Files;
+import java.util.ArrayList;
 
 public class Shell{
 	String Directory = "";
+	ArrayList<String> History = new ArrayList<String>();
 	public Shell(String[] args) throws IOException{
 		Directory = System.getProperty("user.dir"); //get the starting user directory. all directory changes will be here
 		Scanner inputStream = new Scanner(System.in);
@@ -16,6 +18,7 @@ public class Shell{
 			System.out.format("[%s]: ", Directory); //display the current dir
 			try{
 				inputString = inputStream.nextLine(); //read a line of input
+				History.add(inputString);
 			} catch (Exception e){
 				System.exit(0);
 			}
@@ -37,13 +40,37 @@ public class Shell{
 					Builtins.list(Directory);
 					break;
 				case "cd":
-					Directory = Builtins.cd(Directory, parsed[1]);
+					if(parsed.length > 1)
+						Directory = Builtins.cd(Directory, parsed[1]);
 					break;
 				case "mdir":
-					Builtins.mdir(Directory, parsed[1]);
+					if(parsed.length > 1)
+						Builtins.mdir(Directory, parsed[1]);
 					break;
 				case "rdir":
-					Builtins.rdir(Directory + "/" + parsed[1]);
+					if(parsed.length > 1)
+						Builtins.rdir(Directory + "/" + parsed[1]);
+					break;
+				case "history":
+					Builtins.history(History);
+					break;
+				case "^":
+					if(parsed.length > 1){
+						try{
+							int n = Integer.parseInt(parsed[1]);
+							if(n < History.size()){
+								String[] b = parse(History.get(n - 1));
+								execute(b);
+							}
+							else{
+								System.out.format("%d is to large for the current history\n", n);
+							}
+						}
+						catch(Exception e){
+							System.out.format("The command ^ requires an int to follow and %s is not an int.\n", parsed[1]);
+						}
+					}
+					break;
 			}
 		}
 
