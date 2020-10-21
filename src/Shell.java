@@ -39,6 +39,11 @@ public class Shell{
 				case "cd":
 					Directory = Builtins.cd(Directory, parsed[1]);
 					break;
+				case "mdir":
+					Builtins.mdir(Directory, parsed[1]);
+					break;
+				case "rdir":
+					Builtins.rdir(Directory + "/" + parsed[1]);
 			}
 		}
 

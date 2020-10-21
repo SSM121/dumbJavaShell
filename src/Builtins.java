@@ -70,4 +70,47 @@ public class Builtins{
 		return Directory;
 	}
 
+	public static void mdir(String Directory, String goal){
+		Path p = (new File(Directory + "/" + goal)).toPath();
+		if(Files.exists(p)){
+			if(Files.isDirectory(p)){
+				System.out.format("The Directory %s already exsists!\n", goal);
+				return;
+			}
+			else
+			{
+				System.out.format("A file named %s already exsists \n", goal);
+				return;
+			}
+
+		}
+		else
+		{
+			try{
+				Files.createDirectory(p);
+			} catch(Exception e){
+				System.out.println("Unexpected error occurred. creation failed");
+			}
+		}
+	}
+
+	public static void rdir(String Directory){ //send in goal concatenated with Directory so this can be recursive
+		Path p = (new File(Directory)).toPath();
+		if(Files.exists(p))
+		{
+			if(Files.isDirectory(p)){
+				try (DirectoryStream<Path> stream = Files.newDirectoryStream(p)) {
+					for (Path entry: stream) {
+						rdir(entry.toString());
+					}
+				} catch (Exception e){}
+			}
+			try{
+				Files.delete(p);
+			}catch (Exception e){}
+		}
+		
+	}
+
+
 }
