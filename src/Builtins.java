@@ -58,6 +58,15 @@ public class Builtins{
 		else if(goal.compareTo(".") == 0){
 			return Directory;
 		}
+		else if(goal.charAt(0) == '/'){
+			Path p = (new File(goal)).toPath();
+			if(Files.exists(p) && Files.isDirectory(p)){
+				return p.toString();
+			}
+			else{
+				System.out.format("Error: %s is not a valid directory.\n", goal);
+			}
+		}
 		else{
 			Path p = (new File(Directory + "/" + goal)).toPath();
 			if(Files.exists(p) && Files.isDirectory(p)){
