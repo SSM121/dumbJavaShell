@@ -14,59 +14,59 @@ import java.lang.Process;
 
 
 public class Shell{
-	float time = 0.0f;
-	String Directory = "";
-	ArrayList<String> History = new ArrayList<String>();
+	float time = 0.0f; //used for child process time
+	String Directory = ""; //used for keeping track of directory
+	ArrayList<String> History = new ArrayList<String>(); //used for keeping track of history
 	public Shell(String[] args) throws IOException{
 		Directory = System.getProperty("user.dir"); //get the starting user directory. all directory changes will be here
-		Scanner inputStream = new Scanner(System.in);
+		Scanner inputStream = new Scanner(System.in); //used for reading in lines
 		String inputString = "";
 		while(true){ //the main shell loop
 			System.out.format("[%s]: ", Directory); //display the current dir
 			try{
 				inputString = inputStream.nextLine(); //read a line of input
-				History.add(inputString);
+				History.add(inputString); // adds the command to history
 			} catch (Exception e){
 				System.exit(0);
 			}
-			String[] parsed = parse(inputString);
-			execute(parsed);
+			String[] parsed = parse(inputString); //parses string to a string array to remove the spaces
+			execute(parsed); //run the parsed command
 		}
 	}
 
 	public void execute(String[] parsed){
 		if(parsed.length > 0){ //used to make sure the user did not input an empty command. without this an empty command throws exception
 			switch(parsed[0]){
-				case "ptime":
-					System.out.format("Total time in child processex: %.4f\n", time);
+				case "ptime": //displays time spent on child processes
+					System.out.format("Total time in child processes: %.4f\n", time);
 					break;
-				case "here":
+				case "here": //displays current directory
 					Builtins.here(Directory);
 					break;
-				case "exit":
+				case "exit": //exits the shell
 					System.exit(0);
 					break;
-				case "list":
+				case "list": //lists all files and directories in CWD
 					Builtins.list(Directory);
 					break;
-				case "cd":
-					if(parsed.length > 1)
+				case "cd": //changes directory
+					if(parsed.length > 1) //change to new directory
 						Directory = Builtins.cd(Directory, parsed[1]);
-					else if(parsed.length == 1)
+					else if(parsed.length == 1) //change to user home
 						Directory = System.getProperty("user.home");
 					break;
-				case "mdir":
-					if(parsed.length > 1)
+				case "mdir": //make a directory
+					if(parsed.length > 1) //make sure arguments are correct
 						Builtins.mdir(Directory, parsed[1]);
 					break;
-				case "rdir":
+				case "rdir": //remove a directory(recursively)
 					if(parsed.length > 1)
 						Builtins.rdir(Directory + "/" + parsed[1]);
 					break;
-				case "history":
+				case "history": //display history
 					Builtins.history(History);
 					break;
-				case "^":
+				case "^": //run past command
 					if(parsed.length > 1){
 						try{
 							int n = Integer.parseInt(parsed[1]);
@@ -83,32 +83,33 @@ public class Shell{
 						}
 					}
 					break;
-				default:
+				default: //used if no internals match the entered command
 					boolean pipe = false; //will use over loop to determine if there is a pipe
 					int sp = 0;	//used to store the array index of the pipe.
-					for(int x = 0; x < parsed.length; x++){
+					for(int x = 0; x < parsed.length; x++){ //loop to find if there is a pipe and store the location
 						if(parsed[x].compareTo("|") == 0){
 							pipe = true;
 							sp = x;
 						}
 					}
 					if(pipe){ //the case we need to pipe.
-						ProcessBuilder[] pb = {
+						ProcessBuilder[] pb = { //create 2 processbuilders in an array
 							new ProcessBuilder(Arrays.copyOfRange(parsed, 0, sp)),
 							new ProcessBuilder(Arrays.copyOfRange(parsed, sp + 1, parsed.length))};
+						//change directories and input, output and errors as needed
 						pb[0].directory(new File(Directory));
 						pb[1].directory(new File(Directory));
 						pb[0].redirectInput(ProcessBuilder.Redirect.INHERIT);
 						pb[1].redirectOutput(ProcessBuilder.Redirect.INHERIT);
 						pb[0].redirectError(ProcessBuilder.Redirect.INHERIT);
 						pb[1].redirectError(ProcessBuilder.Redirect.INHERIT);
-						try{
-							long start = System.currentTimeMillis();
+						try{ //try to run the processes
+							long start = System.currentTimeMillis(); //used for timer
 							List<Process> l = ProcessBuilder.startPipeline(Arrays.asList(pb));
 							Process p = l.get(l.size() -1);
-							(l.get(1)).waitFor();
+							(l.get(1)).waitFor(); //wait for the last process to end
 							long finish = System.currentTimeMillis();
-							time += (finish - start) / 1000f;
+							time += (finish - start) / 1000f; //calculated the new time
 						}
 						catch(Exception e){
 							System.out.println(e.toString());
@@ -116,17 +117,18 @@ public class Shell{
 						}
 					}
 					else { //used if no pipe
-						ProcessBuilder pb = new ProcessBuilder(parsed);
+						ProcessBuilder pb = new ProcessBuilder(parsed); //build a process
+						//change input output error and directory
 						pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
 						pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
 						pb.directory(new File(Directory));
 						pb.redirectError(ProcessBuilder.Redirect.INHERIT);
 						try{
-							long start = System.currentTimeMillis();
-							Process p = pb.start();
+							long start = System.currentTimeMillis(); //used for timer
+							Process p = pb.start(); //run the process and wait
 							p.waitFor();
 							long finish = System.currentTimeMillis();
-							time += (finish - start) / 1000f;
+							time += (finish - start) / 1000f; //calculate new time
 						}catch(Exception e){
 							System.out.format("Command not found: %s\n", parsed[0]);
 						}
@@ -136,7 +138,9 @@ public class Shell{
 		}
 
 	}
-	public String[] parse(String command){
+	//the following method was provided by Erik Falor to handle quoted command line argument and is his work
+	//he has graciously let his class used it. I take no credit for it
+	public String[] parse(String command){ 
 		java.util.List<String> matchList = new java.util.ArrayList<>();
 		Pattern regex = Pattern.compile("[^\\s\"']+|\"([^\"]*)\"|'([^']*)'");
 		Matcher regexMatcher = regex.matcher(command);

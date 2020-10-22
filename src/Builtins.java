@@ -9,10 +9,10 @@ import java.text.FieldPosition;
 import java.util.ArrayList;
 
 public class Builtins{
-	public static void here(String Directory){
+	public static void here(String Directory){// simply print the direcotry
 		System.out.format("%s\n", Directory);
 	}
-	public static void list(String Directory){
+	public static void list(String Directory){ //print all the sub paths including all there info like "ls -l" on linux 
 		Path p = (new File(Directory)).toPath();
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(p)) {
 			for (Path entry: stream) {
@@ -49,7 +49,7 @@ public class Builtins{
 			System.out.println("test2");
 		}
 	}
-	public static String cd(String Directory, String goal){
+	public static String cd(String Directory, String goal){ //change the directory given the old one and the goal
 		if(goal.compareTo("..") == 0){
 			Path p = (new File(Directory)).toPath();
 			Path z = p.getParent();
@@ -81,7 +81,7 @@ public class Builtins{
 		return Directory;
 	}
 
-	public static void mdir(String Directory, String goal){
+	public static void mdir(String Directory, String goal){ //make directory
 		Path p = (new File(Directory + "/" + goal)).toPath();
 		if(Files.exists(p)){
 			if(Files.isDirectory(p)){
@@ -104,7 +104,7 @@ public class Builtins{
 			}
 		}
 	}
-
+	//delete a directory if it exsists
 	public static void rdir(String Directory){ //send in goal concatenated with Directory so this can be recursive
 		Path p = (new File(Directory)).toPath();
 		if(Files.exists(p))
@@ -123,7 +123,7 @@ public class Builtins{
 		
 	}
 
-	public static void history(ArrayList<String> History){
+	public static void history(ArrayList<String> History){ //display history in a pretty list
 		for(int i = 0; i < History.size(); i++){
 			System.out.format("%d : %s\n", i + 1, History.get(i));
 		}
